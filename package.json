@@ -1,0 +1,28 @@
+{
+  "name": "onesies",
+  "version": "1.0.0",
+  "description": "Playground for agentic one-offs",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:40987/git/mrflip/onesies"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.9.1",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.17.24",
+    "lodash": "^4.18.1"
+  }
+}
