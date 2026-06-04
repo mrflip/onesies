@@ -1,4 +1,4 @@
-import { TimePhrase } from './TimePhrase';
+import { TimePhrase } from '../src/TimePhrase';
 
 describe('TimePhrase', () => {
   test('midnight has blank ampm', () => {

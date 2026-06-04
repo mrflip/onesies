@@ -1,7 +1,3 @@
-/**
- * Vocabulary constants for time phrase generation.
- */
-
 /** Cardinal hour words: index 0 = "twelve" (used for 12 o'clock), index 1..12 = one..twelve */
 export const HOUR_WORDS: Record<number, string[]> = {
   0:  ['twelve'],
@@ -42,8 +38,8 @@ export function hourWordsWithSpecial(h: number): string[] {
 }
 
 /**
- * Spoken forms for a minute value used in "X past" / "X til" contexts.
- * Returns [] if the minute has no natural phrase form (e.g. raw numbers only).
+ * Spoken forms for a minute offset used in "X past" / "X til" / "X to" contexts.
+ * Extends to 39 so phrases like "thirty past" and "twenty nine til" are covered.
  */
 export const MINUTE_PAST_WORDS: Record<number, string[]> = {
   1:  ['one'],
@@ -75,14 +71,24 @@ export const MINUTE_PAST_WORDS: Record<number, string[]> = {
   27: ['twenty seven'],
   28: ['twenty eight'],
   29: ['twenty nine'],
+  30: ['thirty'],
+  31: ['thirty one'],
+  32: ['thirty two'],
+  33: ['thirty three'],
+  34: ['thirty four'],
+  35: ['thirty five'],
+  36: ['thirty six'],
+  37: ['thirty seven'],
+  38: ['thirty eight'],
+  39: ['thirty nine'],
 };
 
 /**
  * Spoken forms for a minute value used in "H:MM" / "H oh MM" style.
- * Minute 0 can be "exactly" / "" (empty string = bare hour).
+ * Minute 0 can be "sharp" / "" (empty string = bare hour).
  */
 export const MINUTE_CLOCKFACE_WORDS: Record<number, string[]> = {
-  0:  ['', 'exactly', "o'clock"],
+  0:  ['', 'sharp', "o'clock"],
   1:  ['oh one'],
   2:  ['oh two'],
   3:  ['oh three'],
@@ -112,7 +118,7 @@ export const MINUTE_CLOCKFACE_WORDS: Record<number, string[]> = {
   27: ['twenty seven'],
   28: ['twenty eight'],
   29: ['twenty nine'],
-  30: ['thirty', 'half past'],
+  30: ['thirty'],
   31: ['thirty one'],
   32: ['thirty two'],
   33: ['thirty three'],
