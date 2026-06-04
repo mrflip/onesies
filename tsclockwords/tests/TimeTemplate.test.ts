@@ -4,13 +4,14 @@ import {
   ClockfaceMinuteTT,
   MinutesPastHourTT,
   MinutesTilHourTT,
+  MinutesToHourTT,
   QuarterPastHourTT,
   QuarterTilHourTT,
+  QuarterToHourTT,
   HalfPastHourTT,
   FractionHourTT,
   ALL_TEMPLATES,
-} from './TimeTemplate';
-import { TimePhrase } from './TimePhrase';
+} from '../src/TimeTemplate';
 
 // ---------------------------------------------------------------------------
 // ClockfaceHourTT
@@ -24,16 +25,23 @@ describe('ClockfaceHourTT', () => {
   });
 
   test('produces "midnight" phrase at 0:00', () => {
-    const midnights = phrases.filter((p) => p.hour === 0 && p.timewords === 'midnight');
-    expect(midnights.length).toBeGreaterThan(0);
+    expect(phrases.some((p) => p.hour === 0 && p.timewords === 'midnight')).toBe(true);
   });
 
   test('produces bare "three" phrase at 3:00', () => {
     expect(phrases.some((p) => p.hour === 3 && p.timewords === 'three')).toBe(true);
   });
 
+  test('produces "three sharp" phrase at 3:00', () => {
+    expect(phrases.some((p) => p.hour === 3 && p.timewords === 'three sharp')).toBe(true);
+  });
+
   test("produces \"three o'clock\" phrase at 3:00", () => {
     expect(phrases.some((p) => p.hour === 3 && p.timewords === "three o'clock")).toBe(true);
+  });
+
+  test('does NOT produce "three exactly"', () => {
+    expect(phrases.some((p) => p.timewords.includes('exactly'))).toBe(false);
   });
 
   test('produces "noon" at 12:00', () => {
@@ -65,8 +73,8 @@ describe('ClockfaceMinuteTT', () => {
     expect(phrases.some((p) => p.hour === 3 && p.min === 30 && p.timewords === 'three thirty')).toBe(true);
   });
 
-  test('"three half past" at 3:30', () => {
-    expect(phrases.some((p) => p.hour === 3 && p.min === 30 && p.timewords === 'three half past')).toBe(true);
+  test('does NOT produce "three half past"', () => {
+    expect(phrases.some((p) => p.timewords === 'three half past')).toBe(false);
   });
 });
 
@@ -85,12 +93,16 @@ describe('MinutesPastHourTT', () => {
     expect(phrases.some((p) => p.hour === 0 && p.min === 15 && p.timewords === 'a quarter past midnight')).toBe(true);
   });
 
-  test('"fifteen past midnight" at 0:15', () => {
-    expect(phrases.some((p) => p.hour === 0 && p.min === 15 && p.timewords === 'fifteen past midnight')).toBe(true);
+  test('"thirty past one" at 1:30', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 30 && p.timewords === 'thirty past one')).toBe(true);
   });
 
-  test('max minute is 30', () => {
-    expect(phrases.every((p) => p.min <= 30)).toBe(true);
+  test('"thirty nine past one" at 1:39', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 39 && p.timewords === 'thirty nine past one')).toBe(true);
+  });
+
+  test('max minute is 39', () => {
+    expect(phrases.every((p) => p.min <= 39)).toBe(true);
   });
 });
 
@@ -109,12 +121,48 @@ describe('MinutesTilHourTT', () => {
     expect(phrases.some((p) => p.hour === 23 && p.min === 45 && p.timewords === 'a quarter til midnight')).toBe(true);
   });
 
-  test('"one til one" at 0:59 (1am - 1 min)', () => {
-    expect(phrases.some((p) => p.hour === 0 && p.min === 59 && p.timewords === 'one til one')).toBe(true);
+  test('"thirty til two" at 1:30', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 30 && p.timewords === 'thirty til two')).toBe(true);
   });
 
-  test('minutes are all in range 31..59', () => {
-    expect(phrases.every((p) => p.min >= 31 && p.min <= 59)).toBe(true);
+  test('"thirty nine til two" at 1:21', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 21 && p.timewords === 'thirty nine til two')).toBe(true);
+  });
+
+  test('minutes are all in range 21..59', () => {
+    expect(phrases.every((p) => p.min >= 21 && p.min <= 59)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MinutesToHourTT
+// ---------------------------------------------------------------------------
+describe('MinutesToHourTT', () => {
+  const tt = new MinutesToHourTT();
+  const phrases = tt.generatePhrases();
+
+  test('"five to four" at 3:55', () => {
+    expect(phrases.some((p) => p.hour === 3 && p.min === 55 && p.timewords === 'five to four')).toBe(true);
+  });
+
+  test('"a quarter to midnight" at 23:45', () => {
+    expect(phrases.some((p) => p.hour === 23 && p.min === 45 && p.timewords === 'a quarter to midnight')).toBe(true);
+  });
+
+  test('"thirty to two" at 1:30', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 30 && p.timewords === 'thirty to two')).toBe(true);
+  });
+
+  test('"thirty nine to two" at 1:21', () => {
+    expect(phrases.some((p) => p.hour === 1 && p.min === 21 && p.timewords === 'thirty nine to two')).toBe(true);
+  });
+
+  test('minutes are all in range 21..59', () => {
+    expect(phrases.every((p) => p.min >= 21 && p.min <= 59)).toBe(true);
+  });
+
+  test('uses "to" not "til"', () => {
+    expect(phrases.every((p) => !p.timewords.includes('til'))).toBe(true);
   });
 });
 
@@ -131,10 +179,6 @@ describe('QuarterPastHourTT', () => {
 
   test('"quarter past midnight" at 0:15', () => {
     expect(phrases.some((p) => p.hour === 0 && p.timewords === 'quarter past midnight')).toBe(true);
-  });
-
-  test('"quarter past one" at 1:15', () => {
-    expect(phrases.some((p) => p.hour === 1 && p.timewords === 'quarter past one')).toBe(true);
   });
 
   test('"quarter past noon" at 12:15', () => {
@@ -164,6 +208,26 @@ describe('QuarterTilHourTT', () => {
 
   test('"quarter til midnight" at 23:45', () => {
     expect(phrases.some((p) => p.hour === 23 && p.timewords === 'quarter til midnight')).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// QuarterToHourTT
+// ---------------------------------------------------------------------------
+describe('QuarterToHourTT', () => {
+  const tt = new QuarterToHourTT();
+  const phrases = tt.generatePhrases();
+
+  test('all phrases have min=45', () => {
+    expect(phrases.every((p) => p.min === 45)).toBe(true);
+  });
+
+  test('"quarter to one" at 0:45', () => {
+    expect(phrases.some((p) => p.hour === 0 && p.timewords === 'quarter to one')).toBe(true);
+  });
+
+  test('"quarter to midnight" at 23:45', () => {
+    expect(phrases.some((p) => p.hour === 23 && p.timewords === 'quarter to midnight')).toBe(true);
   });
 });
 
@@ -202,8 +266,13 @@ describe('FractionHourTT', () => {
     expect(phrases.some((p) => p.hour === 3 && p.min === 30 && p.timewords === 'three and a half')).toBe(true);
   });
 
-  test('"midnight and three quarters" at 0:45', () => {
-    expect(phrases.some((p) => p.hour === 0 && p.min === 45 && p.timewords === 'midnight and three quarters')).toBe(true);
+  test('does NOT produce "and three quarters" phrases', () => {
+    expect(phrases.some((p) => p.timewords.includes('three quarters'))).toBe(false);
+  });
+
+  test('only produces min=15 and min=30', () => {
+    const mins = _.uniq(phrases.map((p) => p.min)).sort((a, b) => a - b);
+    expect(mins).toEqual([15, 30]);
   });
 });
 

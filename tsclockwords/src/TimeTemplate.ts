@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { TimePhrase } from './TimePhrase';
 import {
   hourWords,
@@ -34,10 +33,10 @@ function allHours(includeSpecial = true): Array<{ h24: number; word: string }> {
 }
 
 // ---------------------------------------------------------------------------
-// "H o'clock / H exactly / bare H" — ClockfaceHourTT
+// "H o'clock / H sharp / bare H" — ClockfaceHourTT
 // ---------------------------------------------------------------------------
 
-/** "three", "three exactly", "three o'clock" (minute = 0) */
+/** "three", "three sharp", "three o'clock" (minute = 0) */
 export class ClockfaceHourTT extends TimeTemplate {
   readonly name = 'ClockfaceHour';
 
@@ -78,14 +77,14 @@ export class ClockfaceMinuteTT extends TimeTemplate {
 // "N past H" — MinutesPastHourTT
 // ---------------------------------------------------------------------------
 
-/** "five past three", "a quarter past midnight", "twenty past one" */
+/** "five past three", "a quarter past midnight", "thirty past one" */
 export class MinutesPastHourTT extends TimeTemplate {
   readonly name = 'MinutesPastHour';
 
   generatePhrases(): TimePhrase[] {
     const phrases: TimePhrase[] = [];
     for (const { h24, word: hWord } of allHours()) {
-      for (let m = 1; m <= 30; m++) {
+      for (let m = 1; m <= 39; m++) {
         for (const mWord of MINUTE_PAST_WORDS[m] ?? []) {
           phrases.push(new TimePhrase(h24, m, `${mWord} past ${hWord}`));
         }
@@ -106,11 +105,34 @@ export class MinutesTilHourTT extends TimeTemplate {
   generatePhrases(): TimePhrase[] {
     const phrases: TimePhrase[] = [];
     for (const { h24, word: hWord } of allHours()) {
-      for (let offset = 1; offset <= 29; offset++) {
-        const min = (60 - offset) % 60; // actual minute
-        const actualH24 = (h24 - 1 + 24) % 24; // the hour that's "til h24"
+      for (let offset = 1; offset <= 39; offset++) {
+        const min = (60 - offset) % 60;
+        const actualH24 = (h24 - 1 + 24) % 24;
         for (const mWord of MINUTE_PAST_WORDS[offset] ?? []) {
           phrases.push(new TimePhrase(actualH24, min, `${mWord} til ${hWord}`));
+        }
+      }
+    }
+    return phrases;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// "N to H" — MinutesToHourTT
+// ---------------------------------------------------------------------------
+
+/** "five to three", "a quarter to midnight", "ten to two" */
+export class MinutesToHourTT extends TimeTemplate {
+  readonly name = 'MinutesToHour';
+
+  generatePhrases(): TimePhrase[] {
+    const phrases: TimePhrase[] = [];
+    for (const { h24, word: hWord } of allHours()) {
+      for (let offset = 1; offset <= 39; offset++) {
+        const min = (60 - offset) % 60;
+        const actualH24 = (h24 - 1 + 24) % 24;
+        for (const mWord of MINUTE_PAST_WORDS[offset] ?? []) {
+          phrases.push(new TimePhrase(actualH24, min, `${mWord} to ${hWord}`));
         }
       }
     }
@@ -122,7 +144,7 @@ export class MinutesTilHourTT extends TimeTemplate {
 // "quarter past H" — QuarterPastHourTT
 // ---------------------------------------------------------------------------
 
-/** Dedicated template: "quarter past one", "quarter past midnight", etc. */
+/** "quarter past one", "quarter past midnight", etc. */
 export class QuarterPastHourTT extends TimeTemplate {
   readonly name = 'QuarterPastHour';
 
@@ -147,6 +169,21 @@ export class QuarterTilHourTT extends TimeTemplate {
 }
 
 // ---------------------------------------------------------------------------
+// "quarter to H" — QuarterToHourTT
+// ---------------------------------------------------------------------------
+
+export class QuarterToHourTT extends TimeTemplate {
+  readonly name = 'QuarterToHour';
+
+  generatePhrases(): TimePhrase[] {
+    return allHours().map(({ h24, word }) => {
+      const actualH24 = (h24 - 1 + 24) % 24;
+      return new TimePhrase(actualH24, 45, `quarter to ${word}`);
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // "half past H" — HalfPastHourTT
 // ---------------------------------------------------------------------------
 
@@ -159,7 +196,7 @@ export class HalfPastHourTT extends TimeTemplate {
 }
 
 // ---------------------------------------------------------------------------
-// "and a quarter" / "and a half" / "three quarters" — FractionHourTT
+// "and a quarter" / "and a half" — FractionHourTT
 // ---------------------------------------------------------------------------
 
 export class FractionHourTT extends TimeTemplate {
@@ -169,7 +206,6 @@ export class FractionHourTT extends TimeTemplate {
     const fractions: Array<{ min: number; fword: string }> = [
       { min: 15, fword: 'and a quarter' },
       { min: 30, fword: 'and a half' },
-      { min: 45, fword: 'and three quarters' },
     ];
     const phrases: TimePhrase[] = [];
     for (const { h24, word } of allHours()) {
@@ -190,8 +226,10 @@ export const ALL_TEMPLATES: TimeTemplate[] = [
   new ClockfaceMinuteTT(),
   new MinutesPastHourTT(),
   new MinutesTilHourTT(),
+  new MinutesToHourTT(),
   new QuarterPastHourTT(),
   new QuarterTilHourTT(),
+  new QuarterToHourTT(),
   new HalfPastHourTT(),
   new FractionHourTT(),
 ];
