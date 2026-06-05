@@ -22,12 +22,6 @@ dev = [
     "mypy>=1.10",
 ]
 
-[tool.uv.scripts]
-test      = "pytest"
-lint      = { chain = ["ruff check src tests", "mypy"] }
-fmt       = "ruff format src tests"
-dump-menu = "python scripts/dump_time_menu.py"
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/clockwords"]
 

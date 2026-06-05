@@ -18,10 +18,10 @@ uv sync --extra dev --extra ml # also pull in numpy / scipy / optuna
 ## Tasks
 
 ```bash
-uv run pytest                          # run all tests  (alias: uv run task test)
-uv run task lint                       # ruff check + mypy
-uv run task fmt                        # auto-format with ruff
-uv run task dump-menu                  # dump TimeMenu to tmp/TimeMenu.kv.json
+make test       # run all tests
+make lint       # ruff check + mypy
+make fmt        # auto-format with ruff
+make dump-menu  # dump TimeMenu to tmp/TimeMenu.kv.json
 ```
 
 ## Tests
