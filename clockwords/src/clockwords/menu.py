@@ -23,7 +23,7 @@ TIME_MENU: TimeMenu = build_time_menu()
 
 def phrases_for(hour: int, minute: int) -> list[TimePhrase]:
     key = f"{hour:02d}:{minute:02d}"
-    return sorted(TIME_MENU.get(key, []), key=lambda p: len(p.words))
+    return sorted(TIME_MENU.get(key, []), key=lambda p: len(p.full))
 
 
 def coverage_summary() -> list[dict[str, object]]:

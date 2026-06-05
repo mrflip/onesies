@@ -8,7 +8,7 @@ output = Path(__file__).parents[1] / "tmp" / "TimeMenu.kv.json"
 
 data = {
     time_key: [
-        {"hour": p.hour, "min": p.min, "timewords": p.timewords, "words": p.words}
+        {"hour": p.hour, "min": p.min, "core": p.core}
         for p in phrases
     ]
     for time_key, phrases in sorted(TIME_MENU.items())

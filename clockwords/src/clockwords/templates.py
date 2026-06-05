@@ -38,8 +38,8 @@ class ClockfaceHourTT(TimeTemplate):
         phrases = []
         for h24, h_word in _all_hours():
             for m_word in MINUTE_CLOCKFACE_WORDS[0]:
-                timewords = f"{h_word} {m_word}".strip() if m_word else h_word
-                phrases.append(TimePhrase(h24, 0, timewords))
+                core = f"{h_word} {m_word}".strip() if m_word else h_word
+                phrases.append(TimePhrase(h24, 0, core))
         return phrases
 
 

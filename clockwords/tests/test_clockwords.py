@@ -19,21 +19,21 @@ from clockwords.menu import phrases_for, TIME_MENU
 # ---------------------------------------------------------------------------
 
 class TestTimePhrase:
-    def test_words_joins_timewords_and_ampm(self):
-        p = TimePhrase(hour=3, min=15, timewords="quarter past three")
-        assert p.words == "quarter past three am"
+    def test_full_joins_core_and_ampm(self):
+        p = TimePhrase(hour=3, min=15, core="quarter past three")
+        assert p.full == "quarter past three am"
 
     def test_no_ampm_at_noon(self):
-        p = TimePhrase(hour=12, min=0, timewords="noon")
+        p = TimePhrase(hour=12, min=0, core="noon")
         assert p.ampm == ""
-        assert p.words == "noon"
+        assert p.full == "noon"
 
     def test_no_ampm_at_midnight(self):
-        p = TimePhrase(hour=0, min=0, timewords="midnight")
+        p = TimePhrase(hour=0, min=0, core="midnight")
         assert p.ampm == ""
 
     def test_pm_label_afternoon(self):
-        p = TimePhrase(hour=15, min=30, timewords="half past three")
+        p = TimePhrase(hour=15, min=30, core="half past three")
         assert p.ampm == "pm"
 
     def test_time_key_format(self):
@@ -41,11 +41,11 @@ class TestTimePhrase:
 
     def test_invalid_hour_raises(self):
         with pytest.raises(ValueError):
-            TimePhrase(hour=24, min=0, timewords="bad")
+            TimePhrase(hour=24, min=0, core="bad")
 
     def test_invalid_min_raises(self):
         with pytest.raises(ValueError):
-            TimePhrase(hour=1, min=60, timewords="bad")
+            TimePhrase(hour=1, min=60, core="bad")
 
     def test_str_format(self):
         p = TimePhrase(3, 15, "quarter past three")
@@ -53,7 +53,7 @@ class TestTimePhrase:
 
 
 # ---------------------------------------------------------------------------
-# timewords helpers
+# timewords vocabulary helpers
 # ---------------------------------------------------------------------------
 
 class TestTimewords:
@@ -85,12 +85,12 @@ class TestTimewords:
 class TestTemplates:
     def test_clockface_hour_generates_bare_hour(self):
         phrases = ClockfaceHourTT().generate_phrases()
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "three" in timewords_set
 
     def test_clockface_hour_generates_oclock(self):
         phrases = ClockfaceHourTT().generate_phrases()
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "three o'clock" in timewords_set
 
     def test_clockface_hour_all_at_minute_zero(self):
@@ -99,7 +99,7 @@ class TestTemplates:
 
     def test_half_past_generates_correct_phrases(self):
         phrases = HalfPastHourTT().generate_phrases()
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "half past three" in timewords_set
         assert "half past midnight" in timewords_set
 
@@ -109,19 +109,19 @@ class TestTemplates:
 
     def test_minutes_past_coverage(self):
         phrases = MinutesPastHourTT().generate_phrases()
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "five past three" in timewords_set
         assert "a quarter past midnight" in timewords_set
 
     def test_minutes_to_hour(self):
         phrases = MinutesToHourTT().generate_phrases()
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "five to four" in timewords_set
 
     def test_quarter_past_hour(self):
         phrases = QuarterPastHourTT().generate_phrases()
         assert all(p.min == 15 for p in phrases)
-        timewords_set = {p.timewords for p in phrases}
+        timewords_set = {p.core for p in phrases}
         assert "quarter past one" in timewords_set
 
 
@@ -135,15 +135,15 @@ class TestTimeMenu:
 
     def test_phrases_for_3_15_includes_quarter_past(self):
         results = phrases_for(3, 15)
-        words_set = {p.timewords for p in results}
+        words_set = {p.core for p in results}
         assert "quarter past three" in words_set
 
     def test_phrases_for_sorted_by_length(self):
         results = phrases_for(3, 0)
-        lengths = [len(p.words) for p in results]
+        lengths = [len(p.full) for p in results]
         assert lengths == sorted(lengths)
 
     def test_phrases_for_midnight_includes_midnight(self):
         results = phrases_for(0, 0)
-        words_set = {p.timewords for p in results}
+        words_set = {p.core for p in results}
         assert "midnight" in words_set
