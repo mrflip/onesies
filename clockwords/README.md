@@ -18,10 +18,10 @@ uv sync --extra dev --extra ml # also pull in numpy / scipy / optuna
 ## Tasks
 
 ```bash
-make test       # run all tests
-make lint       # ruff check + mypy
-make fmt        # auto-format with ruff
-make dump-menu  # dump TimeMenu to tmp/TimeMenu.kv.json
+uv run poe test       # run all tests
+uv run poe lint       # ruff check + mypy
+uv run poe fmt        # auto-format with ruff
+uv run poe dump-menu  # dump TimeMenu to tmp/TimeMenu.kv.json
 ```
 
 ## Tests
