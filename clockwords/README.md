@@ -9,24 +9,35 @@ For the original TypeScript implementation see `../tsclockwords/`.
 
 ```bash
 # from the clockwords/ directory
-pip install -e ".[dev]"        # install package + dev tools (pytest, ruff, mypy)
-pip install -e ".[dev,ml]"     # also pull in numpy / scipy / optuna
+uv sync --extra dev            # install package + dev tools (pytest, ruff, mypy)
+uv sync --extra dev --extra ml # also pull in numpy / scipy / optuna
+```
+
+`uv` creates and manages `.venv` automatically — no manual activation needed.
+
+## Tasks
+
+```bash
+uv run pytest                          # run all tests  (alias: uv run task test)
+uv run task lint                       # ruff check + mypy
+uv run task fmt                        # auto-format with ruff
+uv run task dump-menu                  # dump TimeMenu to tmp/TimeMenu.kv.json
 ```
 
 ## Tests
 
 ```bash
-pytest                         # run all tests
-pytest -v                      # verbose output
-pytest --cov=clockwords        # with coverage report
+uv run pytest                  # run all tests
+uv run pytest -v               # verbose output
+uv run pytest --cov=clockwords # with coverage report
 ```
 
 ## Linting / type-checking
 
 ```bash
-ruff check src tests           # lint
-ruff format src tests          # auto-format
-mypy                           # type-check src/
+uv run ruff check src tests    # lint
+uv run ruff format src tests   # auto-format
+uv run mypy                    # type-check src/
 ```
 
 ## Scripts
@@ -34,7 +45,7 @@ mypy                           # type-check src/
 ```bash
 # Dump the full TimeMenu (all 1440 minutes × all phrase variants)
 # to tmp/TimeMenu.kv.json in line-oriented KV-JSON format
-scripts/dump_time_menu.py
+uv run scripts/dump_time_menu.py
 ```
 
 The output file is valid JSON as a whole and valid TSV line-by-line:
